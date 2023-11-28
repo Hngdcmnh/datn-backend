@@ -8,7 +8,6 @@ data class UpsertSupplierDto(
     val phoneNumber: String?,
     val name: String,
     val avatar: String,
-    val brand: String,
     val contactUrl: String?,
     val totalProducts: Int? = null,
     val rate: Float? = null,

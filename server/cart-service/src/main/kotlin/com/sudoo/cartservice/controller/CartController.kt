@@ -3,6 +3,7 @@ package com.sudoo.cartservice.controller
 import com.sudoo.cartservice.controller.dto.CartDto
 import com.sudoo.cartservice.controller.dto.CartProductsDto
 import com.sudoo.cartservice.service.CartService
+import com.sudoo.cartservice.service.ProductService
 import com.sudoo.domain.base.BaseController
 import com.sudoo.domain.base.BaseResponse
 import com.sudoo.domain.common.Constants
@@ -11,7 +12,8 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 class CartController(
-    val cartService: CartService
+    val cartService: CartService,
+
 ) : BaseController() {
     // thanh toan xog chua co update status cart
     @GetMapping("/active")
@@ -65,6 +67,7 @@ class CartController(
         @RequestHeader(Constants.HEADER_USER_ID) userId: String,
     ): ResponseEntity<BaseResponse<*>> = handle {
         cartService.checkoutProcessingCart(userId)
+
     }
 
     //Call from other service

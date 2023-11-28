@@ -45,9 +45,7 @@ class UserProductServiceImpl(
     }
 
     override suspend fun postListUserProduct(upsertListUserProductDto: UpsertListUserProductDto): List<String> = coroutineScope {
-        productService.getListProductInfoByIds(upsertListUserProductDto.productIds).filter { product ->
-            product.supplierId == upsertListUserProductDto.supplierId
-        }.map {
+        productService.getListProductInfoByIds(upsertListUserProductDto.productIds).map {
            async {
                val upsertUserProduct =
                    UpsertUserProductDto.create(userId = upsertListUserProductDto.userId, productId = it.productId)

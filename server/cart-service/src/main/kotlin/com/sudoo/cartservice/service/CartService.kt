@@ -5,6 +5,7 @@ import com.sudoo.cartservice.controller.dto.CartProductDto
 import com.sudoo.cartservice.controller.dto.UpsertCartProductDto
 import com.sudoo.cartservice.controller.dto.order.OrderCartDto
 import com.sudoo.cartservice.controller.dto.order.OrderCartProductDto
+import com.sudoo.cartservice.repository.entity.Cart
 import com.sudoo.cartservice.repository.entity.CartProduct
 import kotlinx.coroutines.flow.Flow
 
@@ -35,9 +36,10 @@ interface CartService {
     ): CartDto
 
     suspend fun deleteCartProduct(
+        userId: String,
         cartId: String,
-        cartProductId: String,
-    ): Boolean
+        productId: String,
+    ): CartDto
 
 
     //---Processing Cart-------------

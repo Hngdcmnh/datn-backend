@@ -24,9 +24,9 @@ class CartProductController(val cartService: CartService) : BaseController() {
     suspend fun deleteProductInCart(
         @RequestHeader(Constants.HEADER_USER_ID) userId: String,
         @RequestParam("cartId") cartId: String,
-        @RequestParam("cartProductId") cartProductId: String
+        @RequestParam("productId") productId: String
     ): ResponseEntity<BaseResponse<*>> = handle {
-        cartService.deleteCartProduct(cartId, cartProductId)
+        cartService.deleteCartProduct(userId,cartId, productId)
     }
 
     @GetMapping("/internal/{cartId}/products")

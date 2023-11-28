@@ -76,71 +76,76 @@ public class VnPayServiceImpl implements PaymentService, VnpayService {
         return handleException(() -> {
             if (paymentDto.getOrderId() == null) throw new ApiException(HttpStatus.BAD_REQUEST, "Require order id");
             Optional<Order> order = orderRepository.findById(paymentDto.getOrderId());
+
             if (order.isEmpty())
                 throw new ApiException(HttpStatus.NOT_FOUND, "Not found order " + paymentDto.getOrderId());
             Payment payment = toEntity(paymentDto, order.get());
+            String paymentUrl = "";
+            if(paymentDto.getPaymentType().equals("VN_PAY")){
 
-            Map<String, String> vnp_Params = new HashMap<>();
-            vnp_Params.put("vnp_Version", VnPayConfig.vnp_Version);
-            vnp_Params.put("vnp_Command", VnPayConfig.vnp_Command);
-            vnp_Params.put("vnp_TmnCode", VnPayConfig.vnp_TmnCode);
-            vnp_Params.put("vnp_Amount", String.valueOf(VnPayConfig.getVnPayAmount(payment.getAmount())));
-            vnp_Params.put("vnp_CurrCode", VnPayConfig.vnp_CurrCode);
+                Map<String, String> vnp_Params = new HashMap<>();
+                vnp_Params.put("vnp_Version", VnPayConfig.vnp_Version);
+                vnp_Params.put("vnp_Command", VnPayConfig.vnp_Command);
+                vnp_Params.put("vnp_TmnCode", VnPayConfig.vnp_TmnCode);
+                vnp_Params.put("vnp_Amount", String.valueOf(VnPayConfig.getVnPayAmount(payment.getAmount())));
+                vnp_Params.put("vnp_CurrCode", VnPayConfig.vnp_CurrCode);
 
-            if (payment.getBankCode() != null && !payment.getBankCode().isEmpty()) {
-                vnp_Params.put("vnp_BankCode", payment.getBankCode());
-            }
+                if (payment.getBankCode() != null && !payment.getBankCode().isEmpty()) {
+                    vnp_Params.put("vnp_BankCode", payment.getBankCode());
+                }
 
-            vnp_Params.put("vnp_TxnRef", payment.getPaymentId());
-            vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + payment.getPaymentId());
-            vnp_Params.put("vnp_OrderType", payment.getOrderType());
-            vnp_Params.put("vnp_Locale", VnPayConfig.vnp_Locale);
-            vnp_Params.put("vnp_ReturnUrl", VnPayConfig.vnp_ReturnUrl);
-            vnp_Params.put("vnp_IpAddr", paymentDto.getIpAddress());
+                vnp_Params.put("vnp_TxnRef", payment.getPaymentId());
+                vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + payment.getPaymentId());
+                vnp_Params.put("vnp_OrderType", payment.getOrderType());
+                vnp_Params.put("vnp_Locale", VnPayConfig.vnp_Locale);
+                vnp_Params.put("vnp_ReturnUrl", VnPayConfig.vnp_ReturnUrl);
+                vnp_Params.put("vnp_IpAddr", paymentDto.getIpAddress());
 
-            Calendar cld = Calendar.getInstance(TimeZone.getTimeZone(paymentDto.getTimeZoneId()));
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-            String vnp_CreateDate = formatter.format(cld.getTime());
-            vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+                Calendar cld = Calendar.getInstance(TimeZone.getTimeZone(paymentDto.getTimeZoneId()));
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+                String vnp_CreateDate = formatter.format(cld.getTime());
+                vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-            cld.add(Calendar.MINUTE, 15);
-            String vnp_ExpireDate = formatter.format(cld.getTime());
-            vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
+                cld.add(Calendar.MINUTE, 15);
+                String vnp_ExpireDate = formatter.format(cld.getTime());
+                vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
-            List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
+                List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
 
-            Collections.sort(fieldNames);
-            StringBuilder hashData = new StringBuilder();
-            StringBuilder query = new StringBuilder();
-            Iterator<String> itr = fieldNames.iterator();
+                Collections.sort(fieldNames);
+                StringBuilder hashData = new StringBuilder();
+                StringBuilder query = new StringBuilder();
+                Iterator<String> itr = fieldNames.iterator();
 
-            while (itr.hasNext()) {
-                String fieldName = itr.next();
-                String fieldValue = vnp_Params.get(fieldName);
-                if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                    //Build hash data
-                    hashData.append(fieldName);
-                    hashData.append('=');
-                    hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
-                    //Build query
-                    query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII));
-                    query.append('=');
-                    query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
-                    if (itr.hasNext()) {
-                        query.append('&');
-                        hashData.append('&');
+                while (itr.hasNext()) {
+                    String fieldName = itr.next();
+                    String fieldValue = vnp_Params.get(fieldName);
+                    if ((fieldValue != null) && (fieldValue.length() > 0)) {
+                        //Build hash data
+                        hashData.append(fieldName);
+                        hashData.append('=');
+                        hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+                        //Build query
+                        query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII));
+                        query.append('=');
+                        query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+                        if (itr.hasNext()) {
+                            query.append('&');
+                            hashData.append('&');
+                        }
                     }
                 }
-            }
 
-            String queryUrl = query.toString();
-            String vnp_SecureHash = VnPayConfig.hmacSHA512(VnPayConfig.vnp_HashSecret, hashData.toString());
-            queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-            String paymentUrl = VnPayConfig.vnp_Url + "?" + queryUrl;
+                String queryUrl = query.toString();
+                String vnp_SecureHash = VnPayConfig.hmacSHA512(VnPayConfig.vnp_HashSecret, hashData.toString());
+                queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
+                 paymentUrl = VnPayConfig.vnp_Url + "?" + queryUrl;
+            }
 
             order.get().setPayment(payment);
             paymentRepository.save(payment);
             updateOrderStatus(order.get());
+
             return BaseResponse.ok(toDto(payment, paymentUrl, paymentDto.getTimeZoneId()));
         });
     }

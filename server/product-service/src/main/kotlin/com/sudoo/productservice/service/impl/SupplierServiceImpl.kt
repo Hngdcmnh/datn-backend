@@ -76,7 +76,6 @@ class SupplierServiceImpl(
     }
 
     override suspend fun upsertSupplier(userId: String, supplierDto: UpsertSupplierDto): SupplierDto {
-        if (!ProductValidator.validateBrand(supplierDto.brand)) throw BadRequestException("Brand is too short, require at least 3 characters")
         if (supplierDto.address == null) throw BadRequestException("Required address to create store")
         val ghnShopId = if (supplierDto.supplierId.isNullOrEmpty()) {
             if (supplierDto.phoneNumber == null) throw BadRequestException("Required address to create store")
