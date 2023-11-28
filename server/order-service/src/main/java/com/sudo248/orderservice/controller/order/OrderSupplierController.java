@@ -42,6 +42,15 @@ public class OrderSupplierController {
         return Utils.handleException(() -> BaseResponse.ok(orderService.getListOrderUserInfoByUserId(userId, OrderStatus.fromValues(status))));
     }
 
+
+    @GetMapping("/status")
+    ResponseEntity<BaseResponse<?>> getOrderByStatus(
+            @RequestHeader(Constants.HEADER_USER_ID) String userId,
+            @RequestParam(value = "status", required = false) String status
+    ) {
+        return Utils.handleException(() -> BaseResponse.ok(orderService.getListOrderUserInfoByUserId(userId, OrderStatus.fromValues(status))));
+    }
+
     @PatchMapping("/{orderSupplierId}")
     ResponseEntity<BaseResponse<?>> patchOrderSupplierStatusBySupplierId(
             @RequestHeader(Constants.HEADER_USER_ID) String userId,

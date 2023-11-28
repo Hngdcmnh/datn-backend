@@ -45,6 +45,12 @@ public class Order {
     @Column(name = "address")
     private String address;
 
+    @Column(name = "status")
+    private OrderStatus status;
+
+    @Embedded
+    private Shipment shipment;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "payment_id")
     private Payment payment;

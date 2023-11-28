@@ -152,9 +152,6 @@ public class VnPayServiceImpl implements PaymentService, VnpayService {
 
     private void updateOrderStatus(Order order) throws ApiException {
         updateAmountProduct(order.getUserId(), false);
-        if (order.getPromotionId() != null && !order.getPromotionId().isBlank()) {
-            updateAmountPromotion(order.getPromotionId());
-        }
         checkoutProcessingCart(order.getUserId());
     }
 
