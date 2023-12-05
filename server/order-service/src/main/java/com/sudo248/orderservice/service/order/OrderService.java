@@ -33,7 +33,7 @@ public interface OrderService {
 
     List<OrderSupplierInfoDto> getListOrderSupplierInfoFromUserId(String userId, OrderStatus status) throws  ApiException;
 
-    List<OrderUserInfoDto> getListOrderUserInfoByUserId(String userId, List<OrderStatus> status) throws ApiException;
+    List<OrderCartProductDto> getListOrderUserInfoByUserId(String userId, List<OrderStatus> status) throws ApiException;
 
     Map<String, Object> patchOrderSupplier(String userId, String orderSupplierId, PatchOrderSupplierDto patchOrderSupplierDto) throws ApiException;
 

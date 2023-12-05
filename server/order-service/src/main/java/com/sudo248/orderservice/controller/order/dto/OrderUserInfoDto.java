@@ -16,5 +16,5 @@ public class OrderUserInfoDto {
     private String orderId;
     private double finalPrice;
     private LocalDateTime createdAt;
-    private List<OrderSupplierUserInfoDto> orderSuppliers;
+    private List<OrderCartProductDto> cartProducts;
 }

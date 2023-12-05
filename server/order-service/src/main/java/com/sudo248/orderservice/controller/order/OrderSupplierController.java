@@ -35,7 +35,7 @@ public class OrderSupplierController {
     }
 
     @GetMapping("/users")
-    ResponseEntity<BaseResponse<?>> getOrderOfUser(
+    ResponseEntity<BaseResponse<?>> getOrderOfCustomer(
             @RequestHeader(Constants.HEADER_USER_ID) String userId,
             @RequestParam(value = "status", required = false) String status
     ) {

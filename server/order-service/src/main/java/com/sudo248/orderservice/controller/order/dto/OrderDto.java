@@ -25,5 +25,5 @@ public class OrderDto {
     private String address;
     private Double totalPrice, totalPromotionPrice, finalPrice, totalShipmentPrice;
     private LocalDateTime createdAt;
-    private List<OrderSupplierDto> orderSuppliers;
+    private List<OrderCartProductDto> cartProducts;
 }

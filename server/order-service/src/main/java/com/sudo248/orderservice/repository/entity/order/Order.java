@@ -1,6 +1,8 @@
 package com.sudo248.orderservice.repository.entity.order;
 
+import com.sudo248.orderservice.controller.order.dto.OrderCartProductDto;
 import com.sudo248.orderservice.controller.order.dto.PromotionDto;
+import com.sudo248.orderservice.controller.order.dto.SupplierInfoDto;
 import com.sudo248.orderservice.repository.entity.payment.Payment;
 import lombok.*;
 import org.springframework.lang.Nullable;
@@ -27,6 +29,9 @@ public class Order {
     @Column(name = "user_id")
     private String userId;
 
+    @Column(name = "supplier_id")
+    private String supplierId;
+
     @Column(name = "total_price")
     private Double totalPrice = 0.0;
 
@@ -45,6 +50,9 @@ public class Order {
     @Column(name = "address")
     private String address;
 
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
     @Column(name = "status")
     private OrderStatus status;
 
@@ -58,16 +66,11 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderSupplier> orderSuppliers;
 
-    public double calculateTotalPromotionPrice(PromotionDto promotionDto, List<PromotionDto> supplierPromotion) {
-        if (promotionDto != null) {
-            this.totalPromotionPrice = promotionDto.getValue();
-        }
-        return this.totalPromotionPrice;
-    }
+    @Transient
+    private List<OrderCartProductDto> cartProducts;
 
-    public double calculateTotalShipmentPrice() {
-        this.totalShipmentPrice = orderSuppliers.stream().map(orderSupplier -> orderSupplier.getShipment().getShipmentPrice()).reduce(0.0, Double::sum);
-        return this.totalShipmentPrice;
+    public double calculateTotalPromotionPrice(PromotionDto promotionDto, List<PromotionDto> supplierPromotion) {
+        return 0.0;
     }
 
     public double calculateFinalPrice() {

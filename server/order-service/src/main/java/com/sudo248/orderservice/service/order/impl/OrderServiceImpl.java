@@ -94,6 +94,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto createOrder(String userId, UpsertOrderDto upsertOrderDto) throws ApiException {
+
         Order.OrderBuilder builder = Order.builder()
                 .orderId(Utils.createIdOrElse(upsertOrderDto.getOrderId()))
                 .cartId(upsertOrderDto.getCartId())
@@ -114,36 +115,86 @@ public class OrderServiceImpl implements OrderService {
         }
 
         Order order = builder.build();
-        order.setOrderSuppliers(createOrderSuppliersByCart(order, cart, user));
-        // He thong chua ho tro promotion cho tung staff
+
+        final LocalDateTime createdAt = LocalDateTime.now();
+        final Map<String, List<OrderCartProductDto>> groupBySupplier = cart.getCartProducts().stream().collect(Collectors.groupingBy(orderCartProductDto ->
+                orderCartProductDto.getProduct().getSupplierId()
+        ));
+
+        final List<OrderCartProductDto> cartProducts = cart.getCartProducts();
+
+        int totalLength = cartProducts.get(0).getProduct().getLength();
+        int totalWeight = 0;
+        int totalWidth = cartProducts.get(0).getProduct().getLength();
+        int totalHeight = 0;
+        double totalPrice = 0.0;
+
+
+        for (OrderCartProductDto cartProduct : cartProducts) {
+            totalPrice += cartProduct.getTotalPrice();
+            totalWeight += cartProduct.getProduct().getWeight() * cartProduct.getQuantity();
+            totalHeight += cartProduct.getProduct().getHeight() * cartProduct.getQuantity();
+        }
+
+        SupplierInfoDto supplier = SupplierInfoDto.builder()
+                .supplierId("4e794c286eac2074a2be3822e8cb3c53").ghnShopId(190464).name("Hoang Duc Minh").brand("").avatar("").contactUrl("")
+                .address(
+                        AddressDto.builder()
+                                .addressId("4160257bb44d4e479037eb3162adac7f")
+                                .provinceID(233).districtID(1615).wardCode("270102").provinceName("Ninh Bình").districtName("Thành phố Ninh Bình").wardName("Phường Đông Thành")
+                                .build()
+                )
+                .rate(0)
+                .build();
+
+        final CalculateFeeRequest calculateFeeRequest = CalculateFeeRequest.builder()
+                .serviceTypeId(GHNService.DEFAULT_SHIPMENT_TYPE.ordinal())
+                .fromDistrictId(supplier.getAddress().getDistrictID())
+                .fromWardCode(supplier.getAddress().getWardCode())
+                .toDistrictId(user.getAddress().getDistrictID())
+                .toWardCode(user.getAddress().getWardCode())
+                .weight(totalWeight)
+                .length(totalLength)
+                .width(totalWidth)
+                .height(totalHeight)
+                .build();
+
+        final CalculateExpectedTimeRequest calculateExpectedTimeRequest = CalculateExpectedTimeRequest.builder()
+                .serviceId(GHNService.DEFAULT_SHIPMENT_TYPE.ordinal())
+                .fromDistrictId(supplier.getAddress().getDistrictID())
+                .fromWardCode(supplier.getAddress().getWardCode())
+                .toDistrictId(user.getAddress().getDistrictID())
+                .toWardCode(user.getAddress().getWardCode())
+                .build();
+
+        order.setTotalPrice(totalPrice);
+        order.setShipment(calculateShipment(supplier.getGhnShopId(), calculateFeeRequest, calculateExpectedTimeRequest));
+
+
         order.calculateTotalPromotionPrice(promotionDto, null);
-        order.calculateTotalShipmentPrice();
-        order.calculateFinalPrice();
+        order.setFinalPrice(order.getTotalPrice() + order.getShipment().getShipmentPrice());
+        order.setSupplierId(supplier.getSupplierId());
+        order.setTotalShipmentPrice(order.getShipment().getShipmentPrice());
+        order.setStatus(OrderStatus.PREPARE);
+        order.setCreatedAt(createdAt);
 
         orderRepository.save(order);
-
-        final LocalDateTime orderCreatedAt;
-        if (order.getOrderSuppliers().isEmpty()) {
-            orderCreatedAt = LocalDateTime.now();
-        } else {
-            orderCreatedAt = order.getOrderSuppliers().get(0).getCreatedAt();
-        }
 
         return OrderDto.builder()
                 .orderId(order.getOrderId())
                 .cartId(order.getCartId())
                 .payment(null)
-                .promotion(promotionDto)
+                .promotion(PromotionDto.builder().build())
                 .user(user)
                 .address(order.getAddress())
                 .totalPrice(order.getTotalPrice())
-                .totalShipmentPrice(order.getTotalShipmentPrice())
-                .totalPromotionPrice(order.getTotalPromotionPrice())
-                .finalPrice(order.getFinalPrice())
-                .createdAt(orderCreatedAt)
-                .orderSuppliers(order.getOrderSuppliers().stream().map(orderSupplier -> toOrderSupplierDto(orderSupplier)).collect(Collectors.toList()))
+                .totalShipmentPrice(order.getShipment().getShipmentPrice())
+                .totalPromotionPrice(0.0)
+                .finalPrice(order.getTotalPrice() + order.getShipment().getShipmentPrice())
+                .createdAt(createdAt)
+                .cartProducts(cartProducts)
+//                .orderSuppliers(order.getOrderSuppliers().stream().map(this::toOrderSupplierDto).collect(Collectors.toList()))
                 .build();
-
     }
 
     @Override
@@ -180,7 +231,6 @@ public class OrderServiceImpl implements OrderService {
                 .totalShipmentPrice(order.getTotalShipmentPrice())
                 .totalPromotionPrice(order.getTotalPromotionPrice())
                 .finalPrice(order.getFinalPrice())
-                .orderSuppliers(order.getOrderSuppliers().stream().map(this::toOrderSupplierDto).collect(Collectors.toList()))
                 .createdAt(orderCreatedAt)
                 .build();
 
@@ -280,86 +330,76 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderSupplierInfoDto> getListOrderSupplierInfoFromUserId(String userId, OrderStatus status) throws ApiException {
-        final SupplierInfoDto supplier = productService.getSupplierByUserId(userId).getData();
-        List<OrderSupplier> orderSuppliers;
-        if (status == null) {
-            orderSuppliers = orderSupplierRepository.getAllBySupplierId(supplier.getSupplierId());
-        } else {
-            orderSuppliers = orderSupplierRepository.getAllBySupplierIdAndStatus(supplier.getSupplierId(), status);
-        }
+        final SupplierInfoDto supplier = SupplierInfoDto.builder()
+                .supplierId("4e794c286eac2074a2be3822e8cb3c53").ghnShopId(190464).name("Hoang Duc Minh").brand("").avatar("").contactUrl("")
+                .address(
+                        AddressDto.builder()
+                                .addressId("4160257bb44d4e479037eb3162adac7f")
+                                .provinceID(233).districtID(1615).wardCode("270102").provinceName("Ninh Bình").districtName("Thành phố Ninh Bình").wardName("Phường Đông Thành")
+                                .build()
+                )
+                .rate(0)
+                .build();
 
-        return orderSuppliers.stream().map((orderSupplier -> {
-            Order order = orderSupplier.getOrder();
-            String paymentType = null;
-            LocalDateTime paymentDateTime = null;
-            if (order.getPayment() != null) {
-                paymentType = order.getPayment().getPaymentType();
-                paymentDateTime = order.getPayment().getPaymentDateTime();
-            }
-            final UserDto userDto = getUserById(order.getUserId());
-            return OrderSupplierInfoDto.builder()
-                    .orderSupplierId(orderSupplier.getOrderSupplierId())
-                    .supplierId(supplier.getSupplierId())
-                    .supplierName(supplier.getName())
-                    .userFullName(userDto.getFullName())
-                    .userPhoneNumber(userDto.getEmailOrPhoneNumber())
-                    .paymentType(paymentType)
-                    .paymentDateTime(paymentDateTime)
-                    .status(orderSupplier.getStatus())
-                    .address(order.getAddress())
-                    .expectedReceiveDateTime(orderSupplier.getCreatedAt().plusSeconds(orderSupplier.getShipment().getDeliveryTime() / 1000))
-                    .totalPrice(orderSupplier.getTotalPrice())
-                    .createdAt(orderSupplier.getCreatedAt())
-                    .build();
-        })).collect(Collectors.toList());
+        return orderRepository.getOrderBySupplierId(supplier.getSupplierId()).stream().map(
+                        (order -> {
+                            final UserDto userDto = getUserById(order.getUserId());
+                            String paymentType = null;
+                            LocalDateTime paymentDateTime = null;
+                            if (order.getPayment() != null) {
+                                paymentType = order.getPayment().getPaymentType();
+                                paymentDateTime = order.getPayment().getPaymentDateTime();
+                            }
+                            return OrderSupplierInfoDto.builder()
+                                    .orderSupplierId("")
+                                    .supplierId(supplier.getSupplierId())
+                                    .supplierName(supplier.getName())
+                                    .userFullName(userDto.getFullName())
+                                    .userPhoneNumber(userDto.getEmailOrPhoneNumber())
+                                    .paymentType(paymentType)
+                                    .paymentDateTime(paymentDateTime)
+                                    .status(order.getStatus())
+                                    .address(order.getAddress())
+                                    .expectedReceiveDateTime(order.getCreatedAt().plusSeconds(order.getShipment().getDeliveryTime() / 1000))
+                                    .totalPrice(order.getTotalPrice())
+                                    .createdAt(order.getCreatedAt())
+                                    .build();
+                        }))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<OrderUserInfoDto> getListOrderUserInfoByUserId(String userId, List<OrderStatus> status) throws ApiException {
-        List<Order> orders = orderRepository.getOrdersByUserId(userId);
-        List<OrderUserInfoDto> orderUserInfoDtos = new ArrayList<>();
-        for (Order order : orders) {
-            final CartDto cart = getOrderCartById(order.getCartId(), "");
-            final Map<String, List<OrderCartProductDto>> groupBySupplier = cart.getCartProducts().stream().collect(Collectors.groupingBy(orderCartProductDto ->
-                    orderCartProductDto.getProduct().getSupplierId()
-            ));
-            final List<OrderSupplier> orderSuppliers;
+    public List<OrderCartProductDto> getListOrderUserInfoByUserId(String userId, List<OrderStatus> status) throws ApiException {
+        final SupplierInfoDto supplier = SupplierInfoDto.builder()
+                .supplierId("4e794c286eac2074a2be3822e8cb3c53").ghnShopId(190464).name("Hoang Duc Minh").brand("").avatar("").contactUrl("")
+                .address(
+                        AddressDto.builder()
+                                .addressId("4160257bb44d4e479037eb3162adac7f")
+                                .provinceID(233).districtID(1615).wardCode("270102").provinceName("Ninh Bình").districtName("Thành phố Ninh Bình").wardName("Phường Đông Thành")
+                                .build()
+                )
+                .rate(0)
+                .build();
 
-            if (status != null) {
-                orderSuppliers = order.getOrderSuppliers().stream().filter((e) -> status.contains(e.getStatus())).collect(Collectors.toList());
-            } else {
-                orderSuppliers = order.getOrderSuppliers();
-            }
-            final List<OrderSupplierUserInfoDto> orderSupplierUserInfoDtos = orderSuppliers.stream().map((orderSupplier) -> {
-                        final SupplierInfoDto supplier = productService.getSupplierById(orderSupplier.getSupplierId()).getData();
-                        return OrderSupplierUserInfoDto.builder()
-                                .orderSupplierId(orderSupplier.getOrderSupplierId())
-                                .supplierId(supplier.getSupplierId())
-                                .supplierName(supplier.getName())
-                                .supplierAvatar(supplier.getAvatar())
-                                .supplierBrand(supplier.getBrand())
-                                .supplierContactUrl(supplier.getContactUrl())
-                                .status(orderSupplier.getStatus())
-                                .expectedReceiveDateTime(orderSupplier.getCreatedAt().plusSeconds(orderSupplier.getShipment().getDeliveryTime() / 1000))
-                                .totalPrice(orderSupplier.getTotalPrice())
-                                .orderCartProducts(groupBySupplier.get(orderSupplier.getSupplierId()))
-                                .build();
-                    }
-            ).collect(Collectors.toList());
-            LocalDateTime orderCreatedAt = LocalDateTime.now();
-            if (!orderSuppliers.isEmpty()) {
-                orderCreatedAt = orderSuppliers.get(0).getCreatedAt();
-            }
-            orderUserInfoDtos.add(
-                    OrderUserInfoDto.builder()
-                            .orderId(order.getOrderId())
-                            .finalPrice(order.getFinalPrice())
-                            .createdAt(orderCreatedAt)
-                            .orderSuppliers(orderSupplierUserInfoDtos)
-                            .build()
-            );
+        List<Order> orders = orderRepository.getOrdersByUserId(userId);
+
+        List<Order> orderResults = new ArrayList<>();
+
+        List<OrderCartProductDto> orderCartProductsDtos = new ArrayList<>();
+
+        if (status != null) {
+            orderResults = orders.stream().filter((e) -> status.contains(e.getStatus())).collect(Collectors.toList());
+        } else {
+            orderResults = orders;
         }
-        return orderUserInfoDtos;
+
+        for (Order order : orderResults) {
+            final CartDto cart = getOrderCartById(order.getCartId(), "");
+            List<OrderCartProductDto> orderCartProductDtosOfCart = cart.getCartProducts();
+            orderCartProductsDtos.addAll(orderCartProductDtosOfCart);
+        }
+
+        return orderCartProductsDtos;
     }
 
     @Override
@@ -558,7 +598,6 @@ public class OrderServiceImpl implements OrderService {
                 .totalPromotionPrice(0.0)
                 .finalPrice(orderSupplier.getTotalPrice())
                 .createdAt(orderSupplier.getCreatedAt())
-                .orderSuppliers(List.of(toOrderSupplierDto(orderSupplier)))
                 .build();
     }
 

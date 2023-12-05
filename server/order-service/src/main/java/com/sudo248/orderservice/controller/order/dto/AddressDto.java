@@ -2,12 +2,14 @@ package com.sudo248.orderservice.controller.order.dto;
 
 import com.sudo248.orderservice.repository.entity.order.Location;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AddressDto {
     private String addressId;
 
@@ -28,4 +30,7 @@ public class AddressDto {
     private Location location;
 
     private String fullAddress;
+
+    public AddressDto(String s, int i, int i1, int i2, String ninhBình, String thànhPhốNinhBình, String phườngĐôngThành, Location location, String s1) {
+    }
 }
