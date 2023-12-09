@@ -16,9 +16,12 @@ import com.sudo248.orderservice.repository.OrderSupplierRepository;
 import com.sudo248.orderservice.repository.entity.Role;
 import com.sudo248.orderservice.repository.entity.order.*;
 import com.sudo248.orderservice.repository.entity.payment.Payment;
+import com.sudo248.orderservice.repository.entity.payment.PaymentStatus;
+import com.sudo248.orderservice.repository.entity.payment.PaymentType;
 import com.sudo248.orderservice.service.order.OrderService;
 import com.sudo248.orderservice.service.payment.PaymentService;
 import com.sudo248.orderservice.utils.StringUtils;
+import com.sudoo.domain.utils.IdentifyCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -87,8 +90,57 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<OrderDto> getAllOrders() throws ApiException {
+        List<OrderDto> orderDtos = orderRepository.getOrdersBySupplierId("4e794c286eac2074a2be3822e8cb3c53").stream().map(order -> {
+                    CartDto cart;
+                    List<OrderCartProductDto> cartProducts = new ArrayList<>();
+
+                    UserDto user = getUserById(order.getUserId());
+                    try {
+                        cart = getOrderCartById(order.getCartId(), "");
+                        cartProducts = cart.getCartProducts();
+                    } catch (ApiException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return OrderDto.builder()
+                            .orderId(order.getOrderId())
+                            .cartId(order.getCartId())
+                            .payment(PaymentInfoDto.builder()
+                                    .paymentId(IdentifyCreator.INSTANCE.create())
+                                    .amount(0.0)
+                                    .status(PaymentStatus.PENDING)
+                                    .paymentType(PaymentType.Cash.name())
+                                    .paymentDateTime(order.getCreatedAt())
+                                    .build()
+                            )
+                            .promotion(PromotionDto.builder()
+                                    .promotionId("")
+                                    .name("")
+                                    .value(0.0)
+                                    .build())
+                            .user(user)
+                            .status(order.getStatus())
+                            .address(order.getAddress())
+                            .totalPrice(order.getTotalPrice())
+                            .totalShipmentPrice(order.getShipment().getShipmentPrice())
+                            .totalPromotionPrice(0.0)
+                            .finalPrice(order.getTotalPrice() + order.getShipment().getShipmentPrice())
+                            .createdAt(order.getCreatedAt())
+                            .cartProducts(cartProducts)
+                            .build();
+                }
+        ).collect(Collectors.toList());
+        return orderDtos;
+
+    }
+
+    @Override
     public OrderDto getOrderById(String orderId) throws ApiException {
         Order order = orderRepository.getReferenceById(orderId);
+
+
+        final CartDto cart = getOrderCartById(order.getCartId(), "");
+        order.setCartProducts(cart.getCartProducts());
         return toDto(order);
     }
 
@@ -137,7 +189,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         SupplierInfoDto supplier = SupplierInfoDto.builder()
-                .supplierId("4e794c286eac2074a2be3822e8cb3c53").ghnShopId(190464).name("Hoang Duc Minh").brand("").avatar("").contactUrl("")
+                .supplierId("4e794c286eac2074a2be3822e8cb3c53").ghnShopId(190464).name("Hoang Duc Minh").avatar("").contactUrl("")
                 .address(
                         AddressDto.builder()
                                 .addressId("4160257bb44d4e479037eb3162adac7f")
@@ -226,15 +278,52 @@ public class OrderServiceImpl implements OrderService {
                 .payment(paymentService.toPaymentInfoDto(order.getPayment()))
                 .promotion(getPromotionById(order.getPromotionId()))
                 .user(getUserById(order.getUserId()))
+                .status(order.getStatus())
                 .address(order.getAddress())
                 .totalPrice(order.getTotalPrice())
                 .totalShipmentPrice(order.getTotalShipmentPrice())
                 .totalPromotionPrice(order.getTotalPromotionPrice())
                 .finalPrice(order.getFinalPrice())
                 .createdAt(orderCreatedAt)
+                .cartProducts(order.getCartProducts())
                 .build();
 
     }
+
+    public Order toOrder(OrderDto orderDto) throws ApiException {
+        SupplierInfoDto supplier = SupplierInfoDto.builder()
+                .supplierId("4e794c286eac2074a2be3822e8cb3c53").ghnShopId(190464).name("Hoang Duc Minh").avatar("").contactUrl("")
+                .address(
+                        AddressDto.builder()
+                                .addressId("4160257bb44d4e479037eb3162adac7f")
+                                .provinceID(233).districtID(1615).wardCode("270102").provinceName("Ninh Bình").districtName("Thành phố Ninh Bình").wardName("Phường Đông Thành")
+                                .build()
+                )
+                .rate(0)
+                .build();
+
+        final LocalDateTime orderCreatedAt;
+        orderCreatedAt = LocalDateTime.now();
+        return Order.builder()
+                .orderId(orderDto.getOrderId())
+                .supplierId(supplier.getSupplierId())
+                .cartId(orderDto.getCartId())
+                .payment(paymentService.getPaymentById(orderDto.getPayment().getPaymentId()))
+                .totalPromotionPrice(orderDto.getTotalPromotionPrice())
+                .promotionId(orderDto.getPromotion().getPromotionId())
+                .userId(orderDto.getUser().getUserId())
+                .status(orderDto.getStatus())
+                .address(orderDto.getAddress())
+                .totalPrice(orderDto.getTotalPrice())
+                .totalShipmentPrice(orderDto.getTotalShipmentPrice())
+                .totalPromotionPrice(orderDto.getTotalPromotionPrice())
+                .finalPrice(orderDto.getFinalPrice())
+                .createdAt(orderCreatedAt)
+                .cartProducts(orderDto.getCartProducts())
+                .build();
+
+    }
+
 
     @Override
     public OrderSupplierDto toOrderSupplierDto(OrderSupplier orderSupplier) {
@@ -321,7 +410,16 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto getOrderByOrderSupplierIdAndSupplierFromUserId(String orderSupplierId, String userId) throws ApiException {
-        final SupplierInfoDto supplier = productService.getSupplierByUserId(userId).getData();
+        final SupplierInfoDto supplier = SupplierInfoDto.builder()
+                .supplierId("4e794c286eac2074a2be3822e8cb3c53").ghnShopId(190464).name("Hoang Duc Minh").avatar("").contactUrl("")
+                .address(
+                        AddressDto.builder()
+                                .addressId("4160257bb44d4e479037eb3162adac7f")
+                                .provinceID(233).districtID(1615).wardCode("270102").provinceName("Ninh Bình").districtName("Thành phố Ninh Bình").wardName("Phường Đông Thành")
+                                .build()
+                )
+                .rate(0)
+                .build();
         Optional<OrderSupplier> orderSupplier = orderSupplierRepository.findById(orderSupplierId);
         if (orderSupplier.isEmpty())
             throw new ApiException(HttpStatus.NOT_FOUND, "Not found order supplier " + orderSupplierId);
@@ -331,7 +429,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderSupplierInfoDto> getListOrderSupplierInfoFromUserId(String userId, OrderStatus status) throws ApiException {
         final SupplierInfoDto supplier = SupplierInfoDto.builder()
-                .supplierId("4e794c286eac2074a2be3822e8cb3c53").ghnShopId(190464).name("Hoang Duc Minh").brand("").avatar("").contactUrl("")
+                .supplierId("4e794c286eac2074a2be3822e8cb3c53").ghnShopId(190464).name("Hoang Duc Minh").avatar("").contactUrl("")
                 .address(
                         AddressDto.builder()
                                 .addressId("4160257bb44d4e479037eb3162adac7f")
@@ -371,7 +469,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderCartProductDto> getListOrderUserInfoByUserId(String userId, List<OrderStatus> status) throws ApiException {
         final SupplierInfoDto supplier = SupplierInfoDto.builder()
-                .supplierId("4e794c286eac2074a2be3822e8cb3c53").ghnShopId(190464).name("Hoang Duc Minh").brand("").avatar("").contactUrl("")
+                .supplierId("4e794c286eac2074a2be3822e8cb3c53").ghnShopId(190464).name("Hoang Duc Minh").avatar("").contactUrl("")
                 .address(
                         AddressDto.builder()
                                 .addressId("4160257bb44d4e479037eb3162adac7f")
@@ -403,33 +501,38 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Map<String, Object> patchOrderSupplier(String userId, String orderSupplierId, PatchOrderSupplierDto patchOrderSupplierDto) throws ApiException {
-        Optional<OrderSupplier> orderSupplierResult = orderSupplierRepository.findById(orderSupplierId);
-        if (orderSupplierResult.isEmpty())
-            throw new ApiException(HttpStatus.NOT_FOUND, "Not found order supplier " + orderSupplierId);
-        OrderSupplier orderSupplier = orderSupplierResult.get();
+    public Map<String, Object> patchOrderSupplier(String userId, String orderId, PatchOrderSupplierDto patchOrderSupplierDto) throws ApiException {
+
+        final SupplierInfoDto supplier = SupplierInfoDto.builder()
+                .supplierId("4e794c286eac2074a2be3822e8cb3c53").ghnShopId(190464).name("Hoang Duc Minh").avatar("").contactUrl("")
+                .address(
+                        AddressDto.builder()
+                                .addressId("4160257bb44d4e479037eb3162adac7f")
+                                .provinceID(233).districtID(1615).wardCode("270102").provinceName("Ninh Bình").districtName("Thành phố Ninh Bình").wardName("Phường Đông Thành")
+                                .build()
+                )
+                .rate(0)
+                .build();
+
+        Order order = orderRepository.getReferenceById(orderId);
+        final CartDto cart = getOrderCartById(order.getCartId(), "");
+        order.setCartProducts(cart.getCartProducts());
         Map<String, Object> response = new HashMap<>();
+
         if (patchOrderSupplierDto.getStatus() != null) {
-            orderSupplier.setStatus(patchOrderSupplierDto.getStatus());
-            if (patchOrderSupplierDto.getStatus() == OrderStatus.RECEIVED && orderSupplier.getRevenue() == null) {
-                Role role = getRoleByUserId(userId);
-                // only consumer can change status to received
-                if (role == Role.CONSUMER) {
-                    // admin will receive 3% of total price for each order-supplier
-                    orderSupplier.setRevenue(orderSupplier.getTotalPrice() * 0.97);
-                    upsertUserProduct(userId, orderSupplier.getOrder().getCartId(), orderSupplier.getSupplierId());
-                }
+            order.setStatus(patchOrderSupplierDto.getStatus());
+            if (patchOrderSupplierDto.getStatus() == OrderStatus.RECEIVED
+            ) {
+                upsertUserProduct(userId, order.getCartId(), supplier.getSupplierId());
             }
             response.put("status", patchOrderSupplierDto.getStatus());
         }
 
         if (patchOrderSupplierDto.getReceivedDateTime() != null) {
-            orderSupplier.setStatus(OrderStatus.RECEIVED);
-            orderSupplier.getShipment().setReceivedDateTime(patchOrderSupplierDto.getReceivedDateTime());
-            response.put("receivedDateTime", patchOrderSupplierDto.getReceivedDateTime());
+            order.setStatus(patchOrderSupplierDto.getStatus());
         }
+        orderRepository.save(order);
 
-        orderSupplierRepository.save(orderSupplier);
         return response;
     }
 

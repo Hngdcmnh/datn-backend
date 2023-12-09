@@ -16,8 +16,9 @@ public class SupplierInfoDto implements Serializable {
     private int ghnShopId;
     private String name;
     private String avatar;
-    private String brand;
     private String contactUrl;
     private AddressDto address;
     private float rate;
 }
+
+

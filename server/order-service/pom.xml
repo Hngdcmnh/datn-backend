@@ -64,8 +64,14 @@
 			<version>2.3.0</version>
 			<scope>compile</scope>
 		</dependency>
+        <dependency>
+            <groupId>com.sudoo</groupId>
+            <artifactId>domain</artifactId>
+            <version>0.0.1</version>
+            <scope>compile</scope>
+        </dependency>
 
-	</dependencies>
+    </dependencies>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>

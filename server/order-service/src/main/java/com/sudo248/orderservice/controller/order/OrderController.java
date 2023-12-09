@@ -4,6 +4,7 @@ import com.sudo248.domain.base.BaseResponse;
 import com.sudo248.domain.common.Constants;
 import com.sudo248.domain.exception.ApiException;
 import com.sudo248.domain.util.Utils;
+import com.sudo248.orderservice.controller.order.dto.PatchOrderSupplierDto;
 import com.sudo248.orderservice.controller.order.dto.UpsertOrderDto;
 import com.sudo248.orderservice.controller.order.dto.OrderDto;
 import com.sudo248.orderservice.controller.order.dto.UpsertOrderPromotionDto;
@@ -39,6 +40,16 @@ public class OrderController {
         return Utils.handleException(() -> {
             OrderDto savedOrder = orderService.createOrder(userId, upsertOrderDto);
             return BaseResponse.ok(savedOrder);
+        });
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<BaseResponse<?>> getAllOrders(
+            @RequestHeader(Constants.HEADER_USER_ID) String userId
+    ) {
+        return Utils.handleException(() -> {
+            List<OrderDto> list = orderService.getAllOrders();
+            return BaseResponse.ok(list);
         });
     }
 
@@ -91,6 +102,15 @@ public class OrderController {
         return Utils.handleException(() -> {
             return BaseResponse.ok(orderService.updateOrderByField(orderId, field, fieldId));
         });
+    }
+
+    @PatchMapping("/{orderId}")
+    public ResponseEntity<BaseResponse<?>> updateOrderStatus(
+            @RequestHeader(Constants.HEADER_USER_ID) String userId,
+            @PathVariable(name = "orderId") String orderId,
+            @RequestBody PatchOrderSupplierDto patchOrderSupplierDto
+    ) {
+        return Utils.handleException(() -> BaseResponse.ok(orderService.patchOrderSupplier(userId, orderId, patchOrderSupplierDto)));
     }
 
     @PatchMapping("/{orderId}/promotion")

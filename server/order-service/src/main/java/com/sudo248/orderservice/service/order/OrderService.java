@@ -13,6 +13,8 @@ import java.util.Map;
 
 public interface OrderService {
     List<OrderDto> getOrdersByUserId(String userId) throws ApiException;
+
+    List<OrderDto> getAllOrders() throws ApiException;
     OrderDto getOrderById(String orderId) throws ApiException;
     OrderDto createOrder(String userId, UpsertOrderDto upsertOrderDto) throws ApiException;
     boolean deleteOrder(String orderId);
