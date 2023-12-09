@@ -5,20 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="72cbe6d0-83b5-4e93-ba3c-2789b9cf0780" name="Changes" comment="fix: OrderSupplier">
-      <change afterPath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/repository/entity/payment/PaymentType.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/domain/src/main/kotlin/com/sudoo/domain/common/Constants.kt" beforeDir="false" afterPath="$PROJECT_DIR$/domain/src/main/kotlin/com/sudoo/domain/common/Constants.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/order-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/order-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/controller/order/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/controller/order/OrderController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/controller/order/dto/OrderSupplierUserInfoDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/controller/order/dto/OrderSupplierUserInfoDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/controller/order/dto/SupplierInfoDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/controller/order/dto/SupplierInfoDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/internal/CartService.java" beforeDir="false" afterPath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/internal/CartService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/repository/OrderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/repository/OrderRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/repository/entity/payment/Payment.java" beforeDir="false" afterPath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/repository/entity/payment/Payment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/service/order/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/service/order/OrderService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migration-up-product-db.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/migration-up-product-db.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/service/order/impl/OrderServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/service/order/impl/OrderServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/mapper/ProductMapper.kt" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/mapper/ProductMapper.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-service/uploads/images/user_default.png" beforeDir="false" afterPath="$PROJECT_DIR$/storage-service/uploads/images/user_default.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/controller/CommentController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/controller/CommentController.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/model/UserProduct.kt" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/model/UserProduct.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/repository/ProductRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/repository/ProductRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/repository/UserProductRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/repository/UserProductRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/service/impl/UserProductServiceImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/service/impl/UserProductServiceImpl.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,7 +129,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.OrderServiceApplication">
+  <component name="RunManager" selected="Spring Boot.ProductServiceApplication">
     <configuration name="ApiGatewayApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="api-gateway" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.sudoo.apigateway.ApiGatewayApplication" />
@@ -295,7 +289,7 @@
       <workItem from="1701968381290" duration="26000" />
       <workItem from="1701968581667" duration="241000" />
       <workItem from="1702044096073" duration="8299000" />
-      <workItem from="1702088592827" duration="3778000" />
+      <workItem from="1702088592827" duration="16578000" />
     </task>
     <task id="LOCAL-00001" summary="feat: get order by status">
       <option name="closed" value="true" />
@@ -337,7 +331,15 @@
       <option name="project" value="LOCAL" />
       <updated>1701794389475</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="fix: OrderSupplier">
+      <option name="closed" value="true" />
+      <created>1702092953711</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1702092953711</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -442,6 +444,11 @@
           <line>517</line>
           <option name="timeStamp" value="94" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/service/order/impl/OrderServiceImpl.java</url>
+          <line>525</line>
+          <option name="timeStamp" value="110" />
+        </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-function">
           <url>file://$PROJECT_DIR$/cart-service/src/main/kotlin/com/sudoo/cartservice/service/CartService.kt</url>
           <line>24</line>
@@ -450,15 +457,6 @@
             <option name="WATCH_EXIT" value="false" />
           </properties>
           <option name="timeStamp" value="30" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="kotlin-function">
-          <url>file://$PROJECT_DIR$/cart-service/src/main/kotlin/com/sudoo/cartservice/service/ProductService.kt</url>
-          <line>11</line>
-          <properties class="com.sudoo.cartservice.service.ProductService" method="upsertUserProductByUserAndSupplier">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="31" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-function">
           <url>file://$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/service/ProductService.kt</url>
@@ -487,6 +485,15 @@
           </properties>
           <option name="timeStamp" value="77" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-function">
+          <url>file://$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/repository/ProductRepository.kt</url>
+          <line>377</line>
+          <properties class="com.sudoo.productservice.repository.ProductRepository" method="getListProductInfoByIds">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="108" />
+        </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/cart-service/src/main/kotlin/com/sudoo/cartservice/service/impl/CartServiceImpl.kt</url>
           <line>356</line>
@@ -497,12 +504,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/cart-service/src/main/kotlin/com/sudoo/cartservice/service/impl/ProductServiceImpl.kt</url>
-          <line>49</line>
-          <option name="timeStamp" value="39" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/cart-service/src/main/kotlin/com/sudoo/cartservice/service/impl/ProductServiceImpl.kt</url>
-          <line>56</line>
+          <line>59</line>
           <option name="timeStamp" value="40" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
@@ -623,18 +625,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/cart-service/src/main/kotlin/com/sudoo/cartservice/service/impl/CartServiceImpl.kt</url>
-          <line>144</line>
-          <option name="timeStamp" value="89" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/cart-service/src/main/kotlin/com/sudoo/cartservice/service/impl/CartServiceImpl.kt</url>
           <line>146</line>
           <option name="timeStamp" value="91" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/cart-service/src/main/kotlin/com/sudoo/cartservice/controller/CartProductController.kt</url>
-          <line>44</line>
-          <option name="timeStamp" value="95" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/cart-service/src/main/kotlin/com/sudoo/cartservice/controller/CartProductController.kt</url>
@@ -645,6 +637,47 @@
           <url>file://$PROJECT_DIR$/cart-service/src/main/kotlin/com/sudoo/cartservice/service/impl/CartServiceImpl.kt</url>
           <line>365</line>
           <option name="timeStamp" value="97" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/controller/CommentController.kt</url>
+          <line>32</line>
+          <option name="timeStamp" value="98" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/cart-service/src/main/kotlin/com/sudoo/cartservice/service/impl/ProductServiceImpl.kt</url>
+          <line>60</line>
+          <option name="timeStamp" value="100" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/cart-service/src/main/kotlin/com/sudoo/cartservice/service/impl/ProductServiceImpl.kt</url>
+          <line>52</line>
+          <option name="timeStamp" value="101" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/service/impl/UserProductServiceImpl.kt</url>
+          <line>47</line>
+          <properties>
+            <option name="lambda-ordinal" value="-1" />
+          </properties>
+          <option name="timeStamp" value="102" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/service/impl/UserProductServiceImpl.kt</url>
+          <line>52</line>
+          <option name="timeStamp" value="103" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/service/impl/ProductServiceImpl.kt</url>
+          <line>346</line>
+          <option name="timeStamp" value="105" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/product-service/src/main/kotlin/com/sudoo/productservice/service/impl/ProductServiceImpl.kt</url>
+          <line>343</line>
+          <properties>
+            <option name="lambda-ordinal" value="-1" />
+          </properties>
+          <option name="timeStamp" value="106" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/order-service/src/main/java/com/sudo248/orderservice/service/order/OrderService.java</url>

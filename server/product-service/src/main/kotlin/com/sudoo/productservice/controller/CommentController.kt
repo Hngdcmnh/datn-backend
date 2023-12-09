@@ -26,7 +26,7 @@ class CommentController(
     }
 
     // only order service call this api whenever user payment success for product
-    @PostMapping("/internal/user-product/list")
+    @PostMapping("/products/internal/user-product/list")
     suspend fun postListUserProduct(
         @RequestBody upsertListUserProductDto: UpsertListUserProductDto
     ): ResponseEntity<BaseResponse<*>> = handle {

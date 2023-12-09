@@ -64,6 +64,7 @@ interface UserProductRepository : CoroutineCrudRepository<UserProduct, String> {
         AND users_products.is_reviewed = :isReviewed
         LIMIT :_limit
         OFFSET :_offset
+        
     """)
     fun getByUserIdAndReviewedWithOffset(
         @Param("userId") userId: String,

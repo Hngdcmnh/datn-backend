@@ -523,7 +523,7 @@ public class OrderServiceImpl implements OrderService {
             order.setStatus(patchOrderSupplierDto.getStatus());
             if (patchOrderSupplierDto.getStatus() == OrderStatus.RECEIVED
             ) {
-                upsertUserProduct(userId, order.getCartId(), supplier.getSupplierId());
+                upsertUserProduct(order.getUserId(), order.getCartId(), supplier.getSupplierId());
             }
             response.put("status", patchOrderSupplierDto.getStatus());
         }

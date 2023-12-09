@@ -90,6 +90,7 @@ CREATE TABLE `users_products`
     `product_id`      CHAR(32) NOT NULL,
     `user_id`         CHAR(32) NOT NULL,
     `rate`            FLOAT4   DEFAULT 0.0,
+    `match_rate`      FLOAT4   DEFAULT 0.0,
     `is_reviewed`     BOOLEAN  DEFAULT FALSE,
     `comment`         TEXT,
     `updated_at`      DATETIME DEFAULT CURRENT_TIMESTAMP,

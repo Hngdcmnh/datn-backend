@@ -22,6 +22,9 @@ data class UserProduct(
     @Column("rate")
     val rate: Float,
 
+    @Column("match_rate")
+    val matchRate: Float,
+
     @Column("is_reviewed")
     val isReviewed: Boolean,
 
