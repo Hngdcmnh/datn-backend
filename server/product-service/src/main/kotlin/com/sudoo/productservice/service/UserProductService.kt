@@ -7,7 +7,11 @@ interface UserProductService {
 
     suspend fun postUserProduct(userId: String, upsertUserProductDto: UpsertUserProductDto): UpsertUserProductDto
 
+    suspend fun postAllUserProductForNewUser(userId: String): Boolean
+
     suspend fun postListUserProduct(upsertListUserProductDto: UpsertListUserProductDto): List<String>
+
+    suspend fun postAllUserProductForNewProduct(productId: String): Boolean
 
     suspend fun upsertReview(userId: String, upsertUserProductDto: UpsertUserProductDto): UserProductDto
 

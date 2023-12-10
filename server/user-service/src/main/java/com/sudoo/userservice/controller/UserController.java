@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/users")
@@ -32,6 +34,14 @@ public class UserController {
         });
     }
 
+    @GetMapping("/info/all")
+    public ResponseEntity<BaseResponse<?>> getAllCustomer(
+    ) {
+        return Utils.handleException(() -> {
+            List<UserInfoDto> userInfoDtos = userService.getAllUserInfo();
+            return BaseResponse.ok(userInfoDtos);
+        });
+    }
     @GetMapping("/info")
     public ResponseEntity<BaseResponse<?>> getUserInfo(
             @RequestHeader(Constants.HEADER_USER_ID) String userId

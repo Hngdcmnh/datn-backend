@@ -13,6 +13,8 @@ import com.sudoo.productservice.model.CategoryProduct
 import com.sudoo.productservice.repository.*
 import com.sudoo.productservice.service.ProductService
 import com.sudoo.productservice.service.SupplierService
+import com.sudoo.productservice.service.UserProductService
+import com.sudoo.productservice.service.UserService
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.filter
@@ -30,6 +32,8 @@ class ProductServiceImpl(
     private val categoryProductRepository: CategoryProductRepository,
     private val supplierService: SupplierService,
     private val productExtrasRepository: ProductExtrasRepository,
+    private val userService: UserService,
+    private val userProductRepository: UserProductRepository
 ) : ProductService {
     override suspend fun addProductToCategory(categoryProductDto: CategoryProductDto): CategoryProductDto {
         val categoryProduct = categoryProductDto.toCategoryProduct()
@@ -83,6 +87,15 @@ class ProductServiceImpl(
                         imageDto.ownerId = image.ownerId
                     }
                 }?.joinAll()
+
+                userService.getAllCustomer().map {
+                    async {
+                        val upsertUserProduct =
+                            UpsertUserProductDto.create(userId = it.userId, productId = product.productId)
+                                .toUserProduct(it.userId, isReviewed = false)
+                        userProductRepository.save(upsertUserProduct)
+                    }
+                }.toList().awaitAll()
             }
 
             productDto.copy(productId = product.productId, sku = product.sku)

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ProductRepository : CoroutineCrudRepository<Product, String> {
+
     suspend fun getProductBySku(sku: String): Product?
 
     @Query(

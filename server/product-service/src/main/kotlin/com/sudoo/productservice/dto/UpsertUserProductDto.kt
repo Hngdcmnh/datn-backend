@@ -7,6 +7,8 @@ data class UpsertUserProductDto(
     val productId: String? = null,
     val userId: String? = null,
     val rate: Float? = null,
+    val matchRate: Float? = null,
+    val avgRate: Float? = null,
     val comment: String? = null,
     var createdAt: LocalDateTime? = null,
     var images: List<String>? = null,

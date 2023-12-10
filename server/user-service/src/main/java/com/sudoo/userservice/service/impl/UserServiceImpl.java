@@ -1,12 +1,13 @@
 package com.sudoo.userservice.service.impl;
 
+import com.sudo248.domain.base.BaseResponse;
 import com.sudo248.domain.exception.ApiException;
 import com.sudo248.domain.util.Utils;
 import com.sudoo.userservice.controller.dto.AddressDto;
 import com.sudoo.userservice.controller.dto.FirebaseUserDto;
 import com.sudoo.userservice.controller.dto.UserDto;
 import com.sudoo.userservice.controller.dto.UserInfoDto;
-import com.sudoo.userservice.internal.FirebaseService;
+import com.sudoo.userservice.internal.ProductService;
 import com.sudoo.userservice.repository.UserRepository;
 import com.sudoo.userservice.repository.entitity.User;
 import com.sudoo.userservice.repository.entitity.UserInfo;
@@ -14,9 +15,13 @@ import com.sudoo.userservice.service.AddressService;
 import com.sudoo.userservice.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -26,18 +31,28 @@ public class UserServiceImpl implements UserService {
 
     private final AddressService addressService;
 
-    private final FirebaseService firebaseService;
+    private final ProductService productService;
 
-    public UserServiceImpl(UserRepository userRepository, AddressService addressService, FirebaseService firebaseService) {
+    public UserServiceImpl(UserRepository userRepository, AddressService addressService, ProductService productService) {
         this.userRepository = userRepository;
         this.addressService = addressService;
-        this.firebaseService = firebaseService;
+        this.productService = productService;
     }
 
     @Override
     public UserDto getUser(String userId) {
         User user = userRepository.getReferenceById(userId);
         return toDto(user);
+    }
+
+    @Override
+    public List<UserInfoDto> getAllUserInfo() throws ApiException {
+        return userRepository.findAll().stream().map(userInfo -> {
+            return new UserInfoDto(
+                    userInfo.getUserId(),
+                    userInfo.getFullName(),
+                    userInfo.getAvatar());
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -58,8 +73,19 @@ public class UserServiceImpl implements UserService {
         AddressDto savedAddress = addressService.postAddress(addressDto);
         user.setAddressId(savedAddress.getAddressId());
         userRepository.save(user);
-//        firebaseService.upsertFirebaseUser(createUserFirebaseFromUser(user));
+        try {
+            createAllUserProduct(user.getUserId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return toDto(user);
+    }
+
+    public void createAllUserProduct(String userId) throws ApiException {
+        ResponseEntity<BaseResponse<Boolean>> response = productService.upsertUserProductForAllProduct(userId);
+        if (response.getStatusCode() != HttpStatus.OK || !response.hasBody()) {
+            throw new ApiException(HttpStatus.NOT_FOUND, "Something went wrong!!");
+        }
     }
 
     @Override

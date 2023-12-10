@@ -25,6 +25,13 @@ class CommentController(
         userProductService.postUserProduct(userId, upsertUserProductDto)
     }
 
+    @PostMapping("/internal/user-product/all")
+    suspend fun postAllUserProduct(
+        @RequestHeader(Constants.HEADER_USER_ID) userId: String,
+    ): ResponseEntity<BaseResponse<*>> = handle {
+        userProductService.postAllUserProductForNewUser(userId)
+    }
+
     // only order service call this api whenever user payment success for product
     @PostMapping("/products/internal/user-product/list")
     suspend fun postListUserProduct(

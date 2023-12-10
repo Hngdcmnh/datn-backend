@@ -60,11 +60,7 @@ class AccountServiceImpl(
             throw EmailOrPhoneNumberExistedException()
         }
         val account = signUpDto.toModel(isValidated = !enableOtp)
-        if (enableOtp) {
-            otpService.generateOtp(signUpDto.emailOrPhoneNumber)
-        } else {
-            userService.createUserForAccount(account)
-        }
+        userService.createUserForAccount(account)
         saveAccount(account)
     }
 

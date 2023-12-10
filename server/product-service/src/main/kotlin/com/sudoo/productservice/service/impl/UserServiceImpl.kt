@@ -18,6 +18,15 @@ import org.springframework.web.reactive.function.client.awaitBodyOrNull
 class UserServiceImpl(
     @Qualifier("user-service") private val client: WebClient
 ) : UserService {
+    override suspend fun getAllCustomer(): List<UserInfoDto> {
+        val response = client.get()
+            .uri("/users/info/all")
+            .retrieve()
+            .awaitBodyOrNull<BaseResponse<List<UserInfoDto>>>() ?: throw UserException()
+
+        return response.data ?: throw UserException()
+    }
+
     override suspend fun getUserInfo(userId: String): UserInfoDto {
         val response = client.get()
             .uri("/users/info")
