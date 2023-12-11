@@ -161,18 +161,26 @@ class ProductServiceImpl(
         )
     }
 
-    override suspend fun getRecommendListProductInfo(offsetRequest: OffsetRequest): ProductPagination<ProductInfoDto> =
+    override suspend fun getRecommendListProductInfo(userId:String, offsetRequest: OffsetRequest): ProductPagination<ProductInfoDto> =
         coroutineScope {
             // TODO: Implement get recommend by AI model here
             val count = async { productRepository.count() }
-            val products =
-                productRepository.getProductInfoWithOffset(offset = offsetRequest.offset, limit = offsetRequest.limit)
-                    .map { product ->
-                        async {
-                            product.images = listOf(imageRepository.getFirstByOwnerId(product.productId).url)
-                            product.toProductInfoDto()
-                        }
+//            val products =
+//                productRepository.getProductInfoWithOffset(offset = offsetRequest.offset, limit = offsetRequest.limit)
+//                    .map { product ->
+//                        async {
+//                            product.images = listOf(imageRepository.getFirstByOwnerId(product.productId).url)
+//                            product.toProductInfoDto()
+//                        }
+//                    }
+
+            val products = productRepository.getProductInfoByUserIdWithOffset(offset = offsetRequest.offset, limit = offsetRequest.limit, userId =userId )
+                .map { product ->
+                    async {
+                        product.images = listOf(imageRepository.getFirstByOwnerId(product.productId).url)
+                        product.toProductInfoDto()
                     }
+                }
             ProductPagination(
                 products = products.toList().awaitAll(),
                 pagination = Pagination(

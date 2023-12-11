@@ -20,8 +20,8 @@ interface ProductRepository : CoroutineCrudRepository<Product, String> {
         products.product_id, 
         products.supplier_id,
         products.sku, 
-        products.name,products.brand, 
-         
+        products.name,
+        products.brand,  
         products.price,
         products.listed_price,
         products.amount,
@@ -73,8 +73,33 @@ interface ProductRepository : CoroutineCrudRepository<Product, String> {
         products.product_id, 
         products.supplier_id,
         products.sku, 
-        products.name,products.brand, 
-         
+        products.name,
+        products.brand, 
+        products.price,
+        products.listed_price,
+        products.amount,
+        products.saleable,
+        products.rate,
+        products.discount,
+        products.start_date_discount,
+        products.end_date_discount
+        FROM products
+        LIMIT :_limit
+        OFFSET :_offset
+    """
+    )
+    fun getProductInfoWithOffset(@Param("_offset") offset: Int = 0, @Param("_limit") limit: Int = 0): Flow<ProductInfo>
+
+
+
+    @Query(
+        """
+        SELECT 
+        products.product_id, 
+        products.supplier_id,
+        products.sku, 
+        products.name,
+        products.brand, 
         products.price,
         products.listed_price,
         products.amount,
@@ -84,11 +109,14 @@ interface ProductRepository : CoroutineCrudRepository<Product, String> {
         products.start_date_discount,
         products.end_date_discount
         FROM products 
+        INNER JOIN users_products ON users_products.user_id = :_user_id
+        WHERE products.product_id = users_products.product_id
+        ORDER BY users_products.match_rate DESC
         LIMIT :_limit
         OFFSET :_offset
     """
     )
-    fun getProductInfoWithOffset(@Param("_offset") offset: Int = 0, @Param("_limit") limit: Int = 0): Flow<ProductInfo>
+    fun getProductInfoByUserIdWithOffset(@Param("_user_id") userId:String ="", @Param("_offset") offset: Int = 0, @Param("_limit") limit: Int = 0): Flow<ProductInfo>
 
     @Query(
         """

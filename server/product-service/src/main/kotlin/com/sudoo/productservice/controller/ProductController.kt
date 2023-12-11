@@ -62,11 +62,12 @@ class ProductController(
 
     @GetMapping("/recommend")
     suspend fun getRecommendListProductInfo(
+        @RequestHeader(Constants.HEADER_USER_ID) userId: String,
         @RequestParam("offset", required = false, defaultValue = Constants.DEFAULT_OFFSET) offset: Int,
         @RequestParam("limit", required = false, defaultValue = Constants.DEFAULT_LIMIT) limit: Int,
     ): ResponseEntity<BaseResponse<*>> = handle {
         val offsetRequest = OffsetRequest(offset, limit)
-        productService.getRecommendListProductInfo(offsetRequest)
+        productService.getRecommendListProductInfo(userId = userId ,offsetRequest = offsetRequest)
     }
 
     @PostMapping("/list")

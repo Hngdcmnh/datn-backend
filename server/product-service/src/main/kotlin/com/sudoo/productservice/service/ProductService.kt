@@ -14,7 +14,7 @@ interface ProductService {
 
     suspend fun getListProductInfo(offsetRequest: OffsetRequest, sortRequest: SortRequest? = null): ProductPagination<ProductInfoDto>
 
-    suspend fun getRecommendListProductInfo(offsetRequest: OffsetRequest): ProductPagination<ProductInfoDto>
+    suspend fun getRecommendListProductInfo(userId:String, offsetRequest: OffsetRequest): ProductPagination<ProductInfoDto>
     suspend fun getListProductInfoByCategory(
         categoryId: String,
         offsetRequest: OffsetRequest,
