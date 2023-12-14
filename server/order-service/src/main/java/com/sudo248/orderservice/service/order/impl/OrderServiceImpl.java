@@ -502,6 +502,54 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<OrderStatusCartProductDto> getListOrderUserInfoByUserIdAndStatus(String userId, List<OrderStatus> status) throws ApiException {
+        final SupplierInfoDto supplier = SupplierInfoDto.builder()
+                .supplierId("4e794c286eac2074a2be3822e8cb3c53").ghnShopId(190464).name("Hoang Duc Minh").avatar("").contactUrl("")
+                .address(
+                        AddressDto.builder()
+                                .addressId("4160257bb44d4e479037eb3162adac7f")
+                                .provinceID(233).districtID(1615).wardCode("270102").provinceName("Ninh Bình").districtName("Thành phố Ninh Bình").wardName("Phường Đông Thành")
+                                .build()
+                )
+                .rate(0)
+                .build();
+
+        List<Order> orders = orderRepository.getOrdersByUserId(userId);
+
+        List<Order> orderResults = new ArrayList<>();
+
+        List<OrderStatusCartProductDto> orderCartProductsDtos = new ArrayList<>();
+
+        if (status != null) {
+            orderResults = orders.stream().filter((e) -> status.contains(e.getStatus())).collect(Collectors.toList());
+        } else {
+            orderResults = orders;
+        }
+
+        for (Order order : orderResults) {
+            final CartDto cart = getOrderCartById(order.getCartId(), "");
+            List<OrderStatusCartProductDto> orderCartProductDtosOfCart = cart.getCartProducts().stream().map(
+                    cartProduct -> {
+                        return
+                                OrderStatusCartProductDto.builder()
+                                        .cartProductId(cartProduct.getCartProductId())
+                                        .orderId(order.getOrderId())
+                                        .createAd(order.getCreatedAt())
+                                        .product(cartProduct.getProduct())
+                                        .cartId(cartProduct.getCartId())
+                                        .quantity(cartProduct.getQuantity())
+                                        .totalPrice(cartProduct.getTotalPrice())
+                                        .build();
+                    }
+            ).collect(Collectors.toList());
+            orderCartProductsDtos.addAll(orderCartProductDtosOfCart);
+        }
+
+        return orderCartProductsDtos;
+    }
+
+
+    @Override
     public List<OrderCartProductReviewDto> getListOrderReviewOfCustomer(String userId, List<OrderStatus> status) throws ApiException {
         final SupplierInfoDto supplier = SupplierInfoDto.builder()
                 .supplierId("4e794c286eac2074a2be3822e8cb3c53").ghnShopId(190464).name("Hoang Duc Minh").avatar("").contactUrl("")
@@ -550,7 +598,7 @@ public class OrderServiceImpl implements OrderService {
                             }
                         }
 
-                        if(reviewDto == null){
+                        if (reviewDto == null) {
                             reviewDto = ReviewDto.builder()
                                     .rate(0)
                                     .isReviewed(false)

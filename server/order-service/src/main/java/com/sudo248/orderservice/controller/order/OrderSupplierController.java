@@ -41,7 +41,7 @@ public class OrderSupplierController {
             @RequestHeader(Constants.HEADER_USER_ID) String userId,
             @RequestParam(value = "status", required = false) String status
     ) {
-        return Utils.handleException(() -> BaseResponse.ok(orderService.getListOrderUserInfoByUserId(userId, OrderStatus.fromValues(status))));
+        return Utils.handleException(() -> BaseResponse.ok(orderService.getListOrderUserInfoByUserIdAndStatus(userId, OrderStatus.fromValues(status))));
     }
 
     @GetMapping("/users/reviews")

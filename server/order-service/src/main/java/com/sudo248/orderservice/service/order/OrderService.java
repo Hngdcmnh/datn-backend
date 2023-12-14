@@ -37,6 +37,8 @@ public interface OrderService {
 
     List<OrderCartProductDto> getListOrderUserInfoByUserId(String userId, List<OrderStatus> status) throws ApiException;
 
+    List<OrderStatusCartProductDto> getListOrderUserInfoByUserIdAndStatus(String userId, List<OrderStatus> status) throws ApiException;
+
     List<OrderCartProductReviewDto> getListOrderReviewOfCustomer(String userId, List<OrderStatus> status) throws ApiException;
 
     Map<String, Object> patchOrderSupplier(String userId, String orderSupplierId, PatchOrderSupplierDto patchOrderSupplierDto) throws ApiException;
