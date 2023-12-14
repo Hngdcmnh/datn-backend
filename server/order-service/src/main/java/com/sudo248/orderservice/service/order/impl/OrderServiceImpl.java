@@ -466,6 +466,7 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
     }
 
+
     @Override
     public List<OrderCartProductDto> getListOrderUserInfoByUserId(String userId, List<OrderStatus> status) throws ApiException {
         final SupplierInfoDto supplier = SupplierInfoDto.builder()
@@ -498,6 +499,81 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return orderCartProductsDtos;
+    }
+
+    @Override
+    public List<OrderCartProductReviewDto> getListOrderReviewOfCustomer(String userId, List<OrderStatus> status) throws ApiException {
+        final SupplierInfoDto supplier = SupplierInfoDto.builder()
+                .supplierId("4e794c286eac2074a2be3822e8cb3c53").ghnShopId(190464).name("Hoang Duc Minh").avatar("").contactUrl("")
+                .address(
+                        AddressDto.builder()
+                                .addressId("4160257bb44d4e479037eb3162adac7f")
+                                .provinceID(233).districtID(1615).wardCode("270102").provinceName("Ninh Bình").districtName("Thành phố Ninh Bình").wardName("Phường Đông Thành")
+                                .build()
+                )
+                .rate(0)
+                .build();
+
+        List<Order> orders = orderRepository.getOrdersByUserId(userId);
+
+
+        ResponseEntity<BaseResponse<?>> response = productService.getReviews(userId);
+        if (!response.hasBody()) {
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Some thing went wrong");
+        }
+        if (!Objects.requireNonNull(response.getBody()).isSuccess()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, response.getBody().getMessage());
+        }
+
+        List<ReviewDto> reviews = (List<ReviewDto>) response.getBody();
+
+        List<Order> orderResults = new ArrayList<>();
+
+        List<OrderCartProductReviewDto> orderCartProductReviewDtos = new ArrayList<>();
+
+        if (status != null) {
+            orderResults = orders.stream().filter((e) -> status.contains(e.getStatus())).collect(Collectors.toList());
+        } else {
+            orderResults = orders;
+        }
+
+        for (Order order : orderResults) {
+
+            final CartDto cart = getOrderCartById(order.getCartId(), "");
+            List<OrderCartProductReviewDto> orderCartProductDtosOfCart = cart.getCartProducts().stream().map(
+                    orderCartProductDto -> {
+                        ReviewDto reviewDto = null;
+                        for (ReviewDto review : reviews) {
+                            if (review.getUserProductId() == orderCartProductDto.getProduct().getProductId()) {
+                                reviewDto = review;
+                                break;
+                            }
+                        }
+
+                        if(reviewDto == null){
+                            reviewDto = ReviewDto.builder()
+                                    .rate(0)
+                                    .isReviewed(false)
+                                    .comment("")
+                                    .build();
+                        }
+
+                        return OrderCartProductReviewDto
+                                .builder()
+                                .cartProductId(orderCartProductDto.getCartProductId())
+                                .cartId(orderCartProductDto.getCartId())
+                                .product(orderCartProductDto.getProduct())
+                                .quantity(orderCartProductDto.getQuantity())
+                                .totalPrice(orderCartProductDto.getTotalPrice())
+                                .rate(reviewDto.getRate())
+                                .isReviewed(reviewDto.isReviewed())
+                                .comment(reviewDto.getComment())
+                                .build();
+                    }
+            ).collect(Collectors.toList());
+            orderCartProductReviewDtos.addAll(orderCartProductDtosOfCart);
+        }
+        return orderCartProductReviewDtos;
     }
 
     @Override

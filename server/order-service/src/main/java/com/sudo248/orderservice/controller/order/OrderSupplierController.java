@@ -26,6 +26,8 @@ public class OrderSupplierController {
         return Utils.handleException(() -> BaseResponse.ok(orderService.getListOrderSupplierInfoFromUserId(userId, OrderStatus.fromValue(status))));
     }
 
+
+
     @GetMapping("/{orderSupplierId}")
     ResponseEntity<BaseResponse<?>> getOrderOfSupplierDetail(
             @RequestHeader(Constants.HEADER_USER_ID) String userId,
@@ -40,6 +42,14 @@ public class OrderSupplierController {
             @RequestParam(value = "status", required = false) String status
     ) {
         return Utils.handleException(() -> BaseResponse.ok(orderService.getListOrderUserInfoByUserId(userId, OrderStatus.fromValues(status))));
+    }
+
+    @GetMapping("/users/reviews")
+    ResponseEntity<BaseResponse<?>> getListOrderReviewOfCustomer(
+            @RequestHeader(Constants.HEADER_USER_ID) String userId,
+            @RequestParam(value = "status", required = false) String status
+    ) {
+        return Utils.handleException(() -> BaseResponse.ok(orderService.getListOrderReviewOfCustomer(userId, OrderStatus.fromValues(status))));
     }
 
 
