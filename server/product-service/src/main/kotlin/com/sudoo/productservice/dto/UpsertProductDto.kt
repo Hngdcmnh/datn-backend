@@ -11,6 +11,8 @@ data class UpsertProductDto(
     val price: Float? = null,
     val listedPrice: Float? = null,
     val amount: Int? = null,
+    val color:String?  = null,
+    val size:String? = null,
     val soldAmount: Int? = null,
     val discount: Int? = null,
     val startDateDiscount: LocalDateTime? = null,

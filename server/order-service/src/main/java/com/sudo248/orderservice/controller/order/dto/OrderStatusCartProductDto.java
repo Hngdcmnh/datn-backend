@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class OrderStatusCartProductDto {
     private String orderId;
     private String cartProductId;
-    private LocalDateTime createAd;
+    private LocalDateTime createdAt;
     private String cartId;
     private OrderProductInfoDto product;
     private int quantity;

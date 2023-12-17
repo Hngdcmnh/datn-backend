@@ -12,6 +12,8 @@ data class ProductDto(
     val price: Float,
     val listedPrice: Float,
     val amount: Int,
+    val color:String,
+    val size:String,
     val soldAmount: Int,
     val rate: Float,
     val discount: Int,

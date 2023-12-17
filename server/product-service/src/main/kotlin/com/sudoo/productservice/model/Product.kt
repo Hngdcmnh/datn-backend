@@ -37,6 +37,12 @@ data class Product(
     @Column("amount")
     var amount: Int,
 
+    @Column("color")
+    var color: String,
+
+    @Column("size")
+    var size: String,
+
     @Column("sold_amount")
     var soldAmount: Int,
 

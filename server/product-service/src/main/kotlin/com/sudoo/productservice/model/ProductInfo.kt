@@ -23,6 +23,12 @@ data class ProductInfo(
     val listedPrice: Float,
     @Column("amount")
     val amount: Int,
+    @Column("sold_amount")
+    val soldAmount: Int,
+    @Column("color")
+    val color: String,
+    @Column("size")
+    val size: String,
     @Column("saleable")
     val saleable: Boolean,
     @Column("rate")

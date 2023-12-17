@@ -502,6 +502,29 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<OrderDto> getAllOrderByUserId(String userId) throws ApiException {
+        return orderRepository.getOrdersByUserId(userId).stream().map(
+                order -> {
+                    return OrderDto.builder()
+                            .orderId(order.getOrderId())
+                            .cartId(order.getCartId())
+                            .payment(paymentService.toPaymentInfoDto(order.getPayment()))
+                            .promotion(PromotionDto.builder().build())
+                            .user(getUserById(order.getUserId()))
+                            .status(order.getStatus())
+                            .address(order.getAddress())
+                            .totalPrice(order.getTotalPrice())
+                            .totalShipmentPrice(order.getTotalShipmentPrice())
+                            .totalPromotionPrice(order.getTotalPromotionPrice())
+                            .finalPrice(order.getFinalPrice())
+                            .createdAt(order.getCreatedAt())
+                            .cartProducts(order.getCartProducts())
+                            .build();
+                }
+        ).collect(Collectors.toList());
+    }
+
+    @Override
     public List<OrderStatusCartProductDto> getListOrderUserInfoByUserIdAndStatus(String userId, List<OrderStatus> status) throws ApiException {
         final SupplierInfoDto supplier = SupplierInfoDto.builder()
                 .supplierId("4e794c286eac2074a2be3822e8cb3c53").ghnShopId(190464).name("Hoang Duc Minh").avatar("").contactUrl("")
@@ -534,7 +557,7 @@ public class OrderServiceImpl implements OrderService {
                                 OrderStatusCartProductDto.builder()
                                         .cartProductId(cartProduct.getCartProductId())
                                         .orderId(order.getOrderId())
-                                        .createAd(order.getCreatedAt())
+                                        .createdAt(order.getCreatedAt())
                                         .product(cartProduct.getProduct())
                                         .cartId(cartProduct.getCartId())
                                         .quantity(cartProduct.getQuantity())
