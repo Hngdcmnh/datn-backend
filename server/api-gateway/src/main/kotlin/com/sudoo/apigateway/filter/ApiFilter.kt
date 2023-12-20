@@ -5,10 +5,6 @@ import com.sudoo.apigateway.utils.TokenUtils
 import com.sudoo.domain.common.Constants
 import com.sudoo.domain.common.SudooError
 import com.sudoo.domain.exception.ApiException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.reactive.awaitFirstOrNull
-import kotlinx.coroutines.reactive.awaitLast
-import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
 import org.springframework.cloud.gateway.filter.GatewayFilter
 import org.springframework.cloud.gateway.filter.GatewayFilterChain
@@ -16,7 +12,6 @@ import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
 import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.server.awaitMultipartData
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
@@ -30,7 +25,7 @@ class ApiFilter(
     private val log = LoggerFactory.getLogger(ApiFilter::class.java)
 
     private val isApiSecured: Predicate<ServerHttpRequest> = Predicate<ServerHttpRequest> { request ->
-        ApiContract.UNSECURED_API_ENDPOINTS.paths.stream()
+        ApiContract.EXTERNAL_API_ENDPOINTS.paths.stream()
             .noneMatch { endpoint ->
                 request.uri.path.contains(endpoint)
             }
@@ -44,7 +39,6 @@ class ApiFilter(
     }
 
     override fun filter(exchange: ServerWebExchange, chain: GatewayFilterChain): Mono<Void> {
-//        return mono(Dispatchers.Unconfined) {
             var request = exchange.request
             var newExchange = exchange
 
@@ -82,6 +76,5 @@ class ApiFilter(
                 }
             }
             return chain.filter(newExchange)
-//        }
     }
 }

@@ -25,6 +25,7 @@ class CommentController(
         userProductService.postUserProduct(userId, upsertUserProductDto)
     }
 
+    //Tạo UserProduct với tất cả product cho user mới
     @PostMapping("/internal/user-product/all")
     suspend fun postAllUserProduct(
         @RequestHeader(Constants.HEADER_USER_ID) userId: String,

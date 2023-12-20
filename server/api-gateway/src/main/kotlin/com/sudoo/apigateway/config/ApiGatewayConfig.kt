@@ -16,7 +16,7 @@ class ApiGatewayConfig(
     @Bean
     fun routes(builder: RouteLocatorBuilder): RouteLocator {
         return builder.routes().run {
-            SudooServices.values().forEach { service ->
+            ServerServices.values().forEach { service ->
                 route(service.id) { predicate ->
                     predicate.path(*service.pattern).filters {
                         filter ->

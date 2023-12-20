@@ -61,7 +61,7 @@ class UserProductServiceImpl(
     suspend fun handleCollaboratingFiltering(userId: String): Boolean {
         try {
             //calculate avg for all user product
-            var userProducts = userProductRepository.findAll().toList()
+            val userProducts = userProductRepository.findAll().toList()
 
             try {
                 for (userProduct in userProducts) {
