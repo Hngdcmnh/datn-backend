@@ -21,6 +21,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="payment-service" target="11" />
+      <module name="sudoo" target="1.5" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

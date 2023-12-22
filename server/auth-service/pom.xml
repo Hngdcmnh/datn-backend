@@ -9,7 +9,7 @@
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>com.sudoo</groupId>
+    <groupId>com.mshop</groupId>
     <artifactId>auth-service</artifactId>
     <version>0.0.1</version>
     <name>auth-service</name>
@@ -98,7 +98,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.sudoo</groupId>
+            <groupId>com.mshop</groupId>
             <artifactId>domain</artifactId>
             <version>0.0.1</version>
             <scope>system</scope>

@@ -8,7 +8,7 @@
         <version>2.7.8</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.sudo248</groupId>
+    <groupId>com.mshop</groupId>
     <artifactId>storage-service</artifactId>
     <version>0.0.1</version>
     <name>storage-service</name>
