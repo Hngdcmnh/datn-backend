@@ -45,7 +45,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.mshop</groupId>
+            <groupId>com.sudo248</groupId>
             <artifactId>domain</artifactId>
             <version>0.0.1</version>
             <scope>system</scope>

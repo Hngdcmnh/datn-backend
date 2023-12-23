@@ -1,8 +1,8 @@
 package com.mshop.notification.controller;
 
-import com.mshop.base.BaseResponse;
-import com.mshop.common.Constants;
-import com.mshop.util.Utils;
+import com.sudo248.domain.base.BaseResponse;
+import com.sudo248.domain.common.Constants;
+import com.sudo248.domain.util.Utils;
 import com.mshop.notification.repository.entity.Notification;
 import com.mshop.notification.service.NotificationService;
 import org.springframework.http.ResponseEntity;

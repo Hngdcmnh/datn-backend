@@ -60,7 +60,7 @@ fun UpsertUserProductDto.combine(userProduct: UserProduct): UserProduct {
         userProductId = userProductId ?: userProduct.userProductId,
         productId = productId ?: userProduct.productId,
         userId = userId ?: userProduct.userId,
-        rate = if (rate == null) userProduct.rate else (userProduct.rate + rate)/2 ,
+        rate = rate ?: 0.0f,
         matchRate = userProduct.matchRate,
         avgRate = userProduct.avgRate,
         isReviewed = true,

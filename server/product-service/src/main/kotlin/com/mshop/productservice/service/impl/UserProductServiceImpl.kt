@@ -1,16 +1,10 @@
 package com.mshop.productservice.service.impl
 
-import com.mshop.base.OffsetRequest
-import com.mshop.base.Pagination
-import com.mshop.exception.BadRequestException
-import com.mshop.utils.Logger
-import com.mshop.utils.Utils
 import com.mshop.productservice.dto.*
 import com.mshop.productservice.mapper.combine
 import com.mshop.productservice.mapper.toReviewDto
 import com.mshop.productservice.mapper.toUserProduct
 import com.mshop.productservice.mapper.toUserProductDto
-import com.mshop.productservice.model.Image
 import com.mshop.productservice.repository.ImageRepository
 import com.mshop.productservice.repository.ProductRepository
 import com.mshop.productservice.repository.UserProductRepository
@@ -18,12 +12,15 @@ import com.mshop.productservice.service.CoreService
 import com.mshop.productservice.service.ProductService
 import com.mshop.productservice.service.UserProductService
 import com.mshop.productservice.service.UserService
-import kotlinx.coroutines.*
+import com.mshop.utils.Logger
+import com.mshop.utils.Utils
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import org.springframework.stereotype.Service
-import java.lang.Exception
 import kotlin.math.pow
 import kotlin.math.sqrt
 
